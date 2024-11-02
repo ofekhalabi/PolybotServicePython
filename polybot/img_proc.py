@@ -1,3 +1,5 @@
+import random
+from cgitb import reset
 from pathlib import Path
 from matplotlib.image import imread, imsave
 
@@ -51,17 +53,67 @@ class Img:
             self.data[i] = res
 
     def rotate(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # Create a new list for the rotated image
+        rotated = []
+        for i in range(len(self.data[0])):  # Iterate over columns
+            new_row = []  # New row for the rotated image
+            for j in range(len(self.data) - 1, -1, -1):  # Iterate over rows in reverse
+                new_row.append(self.data[j][i])  # Append the pixel to the new row
+            rotated.append(new_row)  # Add the new row to the rotated image
+        self.data = rotated  # Update the data with the rotated image
+
 
     def salt_n_pepper(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        res = []
+        for i in self.data :
+            new_row = []
+            for pixel in i:
+                # Generate a random number between 0 and 1 for pixel
+                random_number = random.random()
+                if random_number < 0.2:
+                    new_row.append(255)
+                elif random_number > 0.8 :
+                    new_row.append(0)
+                else :
+                    new_row.append(pixel)
+
+            res.append(new_row)
+        self.data = res
 
     def concat(self, other_img, direction='horizontal'):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        res = []
+        direct_width = len(self.data[0])
+        direct_height = len(self.data)
+        other_img_width = len(other_img.data[0])
+        other_img_height = (len(other_img.data))
+        if direct_height == other_img_height and direct_width == other_img_width :
+            if direction == 'vertical':
+                res = self.data
+                for row in other_img.data:
+                    res.append(row)
+
+            if direction == 'horizontal' :
+                for i in range(len(self.data)):
+                    res.append((self.data[i] + other_img.data[i]))
+
+        else:
+            raise RuntimeError("the dimensions are not compatible")
+        self.data = res
 
     def segment(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        res = []
+        for row in self.data:
+            new_row = []
+            for pixel in row:
+                if pixel > 100:
+                    new_row.append(255)
+                else:
+                    new_row.append(0)
+            res.append(new_row)
+        self.data = res
+
+my_img = Img('/home/ofekh/PycharmProjects/PolybotServicePython/image.jpg')
+another_img = Img('/home/ofekh/PycharmProjects/PolybotServicePython/image.jpg')
+my_img.segment()
+my_img.save_img()
+

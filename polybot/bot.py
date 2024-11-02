@@ -75,4 +75,46 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    pass
+    def handle_message(self, msg):
+        logger.info(f'Incoming message: {msg}')
+
+        chat_id = msg['chat']['id']
+        caption = msg.get('caption', None)  # Get the caption from the message
+
+        if self.is_current_msg_photo(msg):
+            photo_path = self.download_user_photo(msg)
+
+            if caption:
+                caption = caption.lower()
+                # Check if the caption matches any of the defined commands
+                if caption in ['blur', 'contour', 'rotate', 'segment', 'salt and pepper', 'concat', 'rotate 2']:
+                    processed_image_path = self.process_image(photo_path, caption)
+                    self.send_photo(chat_id,processed_image_path)
+
+                else:
+                    self.send_text(chat_id, f'Unknown command: {caption}')
+            else:
+                self.send_text(chat_id, 'Photo received with no caption.')
+        else:
+            self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+
+    def process_image(self, photo_path, command):
+        img = Img(photo_path)  # Assuming Img is your image processing class
+        if command == 'blur':
+            img.blur()
+        elif command == 'contour':
+            img.contour()
+        elif command == 'rotate':
+            img.rotate()
+        elif command == 'segment':
+            img.segment()
+        elif command == 'salt and pepper':
+            img.salt_n_pepper()
+        elif command == 'concat':
+            img.concat(img)
+        elif command == 'rotate 2':
+            img.rotate()
+            img.rotate()
+
+        return img.save_img()
+
