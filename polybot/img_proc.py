@@ -112,8 +112,8 @@ class Img:
             res.append(new_row)
         self.data = res
 
-my_img = Img('/home/ofekh/PycharmProjects/PolybotServicePython/image.jpg')
-another_img = Img('/home/ofekh/PycharmProjects/PolybotServicePython/image.jpg')
-my_img.segment()
-my_img.save_img()
+#my_img = Img('/home/ofekh/PycharmProjects/PolybotServicePython/image.jpg')
+#another_img = Img('/home/ofekh/PycharmProjects/PolybotServicePython/image.jpg')
+#my_img.segment()
+#my_img.save_img()
 
