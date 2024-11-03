@@ -24,10 +24,7 @@ class Bot:
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
     def send_text(self, chat_id, text):
-        try:
-            self.telegram_bot_client.send_message(chat_id, text)
-        except RuntimeError as e:
-            print(f'Cant send text')
+        self.telegram_bot_client.send_message(chat_id, text)
 
     def send_text_with_quote(self, chat_id, text, quoted_msg_id):
         self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
@@ -40,23 +37,21 @@ class Bot:
         Downloads the photos that sent to the Bot to `photos` directory (should be existed)
         :return:
         """
-        try:
-            if not self.is_current_msg_photo(msg):
-                raise RuntimeError(f'Message content of type \'photo\' expected')
+        if not self.is_current_msg_photo(msg):
+            raise RuntimeError(f'Message content of type \'photo\' expected')
 
-            file_info = self.telegram_bot_client.get_file(msg['photo'][-1]['file_id'])
-            data = self.telegram_bot_client.download_file(file_info.file_path)
-            folder_name = file_info.file_path.split('/')[0]
+        file_info = self.telegram_bot_client.get_file(msg['photo'][-1]['file_id'])
+        data = self.telegram_bot_client.download_file(file_info.file_path)
+        folder_name = file_info.file_path.split('/')[0]
 
-            if not os.path.exists(folder_name):
-                os.makedirs(folder_name)
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
 
-            with open(file_info.file_path, 'wb') as photo:
-                photo.write(data)
+        with open(file_info.file_path, 'wb') as photo:
+            photo.write(data)
 
-            return file_info.file_path
-        except OSError as e :
-            print (f'read-only file ')
+        return file_info.file_path
+
 
 
 
@@ -89,25 +84,23 @@ class ImageProcessingBot(Bot):
 
         chat_id = msg['chat']['id']
         caption = msg.get('caption', None)  # Get the caption from the message
-        try:
-            if self.is_current_msg_photo(msg):
-                photo_path = self.download_user_photo(msg)
+        if self.is_current_msg_photo(msg):
+            photo_path = self.download_user_photo(msg)
 
-                if caption:
-                    caption = caption.lower()
-                    # Check if the caption matches any of the defined commands
-                    if caption in ['blur', 'contour', 'rotate', 'segment', 'salt and pepper', 'concat', 'rotate 2']:
-                        processed_image_path = self.process_image(photo_path, caption)
-                        self.send_photo(chat_id,processed_image_path)
+            if caption:
+                caption = caption.lower()
+                # Check if the caption matches any of the defined commands
+                if caption in ['blur', 'contour', 'rotate', 'segment', 'salt and pepper', 'concat', 'rotate 2']:
+                    processed_image_path = self.process_image(photo_path, caption)
+                    self.send_photo(chat_id,processed_image_path)
 
-                    else:
-                        self.send_text(chat_id, f'Unknown command: {caption}')
                 else:
-                    self.send_text(chat_id, 'Photo received with no caption.')
+                    self.send_text(chat_id, f'Unknown command: {caption}')
             else:
-                self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
-        except OSError as e:
-            logger.error(f'Read-only file system:{e}')
+                self.send_text(chat_id, 'Photo received with no caption.')
+        else:
+            self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+
 
     def process_image(self, photo_path, command):
         try:
