@@ -59,6 +59,8 @@ class Bot:
             return file_info.file_path
         except OSError as e:
             print(f"ERROR, Please check your permission {e}")
+        except RuntimeError as e:
+            logger.error(e)
 
 
 
@@ -79,9 +81,17 @@ class Bot:
         """Bot Main message handler"""
         try:
             logger.info(f'Incoming message: {msg}')
+            # Check if the message text is what you expect
+            logger.info(f'Message text: {msg.get("text")}')
             self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
         except TypeError as e:
             print(f'path should be string, bytes, os.PathLike or integer, not NoneType {e}')
+        except KeyError as e:
+            logger.error(f'Missing key in message: {e}')
+            self.send_text(msg['chat']['id'], 'Error processing your message.')
+        except Exception as e:
+            logger.error(f'Unexpected error in handle_message: {e}')
+            self.send_text(msg['chat']['id'], 'An unexpected error occurred.')
 
 
 class QuoteBot(Bot):
