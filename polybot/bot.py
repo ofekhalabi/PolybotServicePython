@@ -24,7 +24,10 @@ class Bot:
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
     def send_text(self, chat_id, text):
-        self.telegram_bot_client.send_message(chat_id, text)
+        try:
+            self.telegram_bot_client.send_message(chat_id, text)
+        except RuntimeError as e:
+            print(f'Cant send text')
 
     def send_text_with_quote(self, chat_id, text, quoted_msg_id):
         self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
@@ -124,9 +127,8 @@ class ImageProcessingBot(Bot):
             elif command == 'rotate 2':
                 img.rotate()
                 img.rotate()
-
             return img.save_img()
         except Exception as e:
             logger.error(f'Error processing image: {e}')
-            return None  # Return None or handle accordingly
+
 
