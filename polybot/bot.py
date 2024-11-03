@@ -101,7 +101,7 @@ class ImageProcessingBot(Bot):
             else:
                 self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
         except OSError as e:
-            logger.error(f'Read-only file system')
+            logger.error(f'Read-only file system:{e}')
 
     def process_image(self, photo_path, command):
         try:
