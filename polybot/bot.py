@@ -4,7 +4,6 @@ import os
 import time
 from telebot.types import InputFile
 from polybot.img_proc import Img
-import tempfile
 
 
 class Bot:
