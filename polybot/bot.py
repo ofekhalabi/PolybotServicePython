@@ -51,8 +51,8 @@ class Bot:
                 photo.write(data)
 
             return file_info.file_path
-        except:
-            raise RuntimeError("ERROR, Please check your permission")
+        except OSError as e:
+            print(f"ERROR, Please check your permission {e}")
 
 
 
