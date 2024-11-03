@@ -126,6 +126,8 @@ class ImageProcessingBot(Bot):
                 self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
         except TypeError as e:
             print(f'path should be string, bytes, os.PathLike or integer, not NoneType {e}')
+        except AssertionError as e:
+            print(f'False is not true: {e}')
 
     def process_image(self, photo_path, command):
         try:
