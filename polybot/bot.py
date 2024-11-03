@@ -88,6 +88,8 @@ class Bot:
             # Check if the message text is what you expect
             logger.info(f'Message text: {msg.get("text")}')
             self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+        except AssertionError as e:
+            print(f'False is not true: {e}')
         except TypeError as e:
             print(f'path should be string, bytes, os.PathLike or integer, not NoneType {e}')
 
@@ -151,7 +153,5 @@ class ImageProcessingBot(Bot):
             return img.save_img()
         except Exception as e:
             logger.error(f'Error processing image: {e}')
-        except AssertionError as e:
-            print(f'False is not true: {e}')
 
 
