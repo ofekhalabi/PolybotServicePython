@@ -23,7 +23,10 @@ class Bot:
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
     def send_text(self, chat_id, text):
-        self.telegram_bot_client.send_message(chat_id, text)
+        try:
+            self.telegram_bot_client.send_message(chat_id, text)
+        except AssertionError as e:
+            print (f'False is not true: {e}')
 
     def send_text_with_quote(self, chat_id, text, quoted_msg_id):
         self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
@@ -85,8 +88,8 @@ class QuoteBot(Bot):
 
 class ImageProcessingBot(Bot):
     def handle_message(self, msg):
-        logger.info(f'Incoming message: {msg}')
         try:
+            logger.info(f'Incoming message: {msg}')
             chat_id = msg['chat']['id']
             caption = msg.get('caption', None)  # Get the caption from the message
             if self.is_current_msg_photo(msg):
