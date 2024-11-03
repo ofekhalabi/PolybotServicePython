@@ -88,7 +88,7 @@ class TestBot(unittest.TestCase):
         except Exception as err:
             self.fail(err)
 
-        #self.assertTrue(self.bot.telegram_bot_client.send_message.called)
+        self.assertTrue(self.bot.telegram_bot_client.send_message.called)
 
         call_args = self.bot.telegram_bot_client.send_message.call_args
         chat_id = call_args[0][0]

@@ -25,87 +25,62 @@ class Bot:
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
     def send_text(self, chat_id, text):
-        try:
-            self.telegram_bot_client.send_message(chat_id, text)
-        except Exception as e :
-          print(f'Error sending message: {e}')
+        self.telegram_bot_client.send_message(chat_id, text)
+
 
     def send_text_with_quote(self, chat_id, text, quoted_msg_id):
-        try:
-            self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
-        except AssertionError as e:
-            print (f'False is not true: {e}')
+        self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
+
 
     def is_current_msg_photo(self, msg):
-        try:
-            return 'photo' in msg
-        except AssertionError as e:
-            print (f'False is not true: {e}')
-
+        return 'photo' in msg
 
     def download_user_photo(self, msg):
         """
         Downloads the photos that sent to the Bot to `photos` directory (should be existed)
         :return:
         """
-        try:
-            if not self.is_current_msg_photo(msg):
-                raise RuntimeError(f'Message content of type \'photo\' expected')
 
-            file_info = self.telegram_bot_client.get_file(msg['photo'][-1]['file_id'])
-            data = self.telegram_bot_client.download_file(file_info.file_path)
-            folder_name = file_info.file_path.split('/')[0]
+        if not self.is_current_msg_photo(msg):
+            raise RuntimeError(f'Message content of type \'photo\' expected')
 
-            if not os.path.exists(folder_name):
-                os.makedirs(folder_name)
+        file_info = self.telegram_bot_client.get_file(msg['photo'][-1]['file_id'])
+        data = self.telegram_bot_client.download_file(file_info.file_path)
+        folder_name = file_info.file_path.split('/')[0]
 
-            with open(file_info.file_path, 'wb') as photo:
-                photo.write(data)
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
 
-            return file_info.file_path
-        except OSError as e:
-            print(f"ERROR, Please check your permission {e}")
-        except AssertionError as e:
-            print(f'False is not true: {e}')
+        with open(file_info.file_path, 'wb') as photo:
+            photo.write(data)
 
-
+        return file_info.file_path
 
 
     def send_photo(self, chat_id, img_path):
-        try:
-            if not os.path.exists(img_path):
-                raise RuntimeError("Image path doesn't exist")
+        if not os.path.exists(img_path):
+            raise RuntimeError("Image path doesn't exist")
 
-            self.telegram_bot_client.send_photo(
-                chat_id,
-                InputFile(img_path)
-            )
-        except AssertionError as e:
-            print(f'False is not true: {e}')
+        self.telegram_bot_client.send_photo(
+            chat_id,
+            InputFile(img_path)
+        )
+
 
     def handle_message(self, msg):
         """Bot Main message handler"""
-        try:
-            logger.info(f'Incoming message: {msg}')
-            # Check if the message text is what you expect
-            logger.info(f'Message text: {msg.get("text")}')
-            self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
-        except AssertionError as e:
-            print(f'False is not true: {e}')
-        except TypeError as e:
-            print(f'path should be string, bytes, os.PathLike or integer, not NoneType {e}')
+        logger.info(f'Incoming message: {msg}')
+        self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
 
 
 
 class QuoteBot(Bot):
     def handle_message(self, msg):
-        try:
-            logger.info(f'Incoming message: {msg}')
+        logger.info(f'Incoming message: {msg}')
 
-            if msg["text"] != 'Please don\'t quote me':
-                self.send_text_with_quote(msg['chat']['id'], msg["text"], quoted_msg_id=msg["message_id"])
-        except AssertionError as e:
-            print(f'False is not true: {e}')
+        if msg["text"] != 'Please don\'t quote me':
+            self.send_text_with_quote(msg['chat']['id'], msg["text"], quoted_msg_id=msg["message_id"])
+
 
 class ImageProcessingBot(Bot):
     def handle_message(self, msg):
@@ -129,10 +104,10 @@ class ImageProcessingBot(Bot):
                     self.send_text(chat_id, 'Photo received with no caption.')
             else:
                 self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
-        except TypeError as e:
-            print(f'path should be string, bytes, os.PathLike or integer, not NoneType {e}')
-        except AssertionError as e:
-            print(f'False is not true: {e}')
+        except Exception as e:
+            logger.error(f"Error processing image: {e}")
+            self.send_text(msg['chat']['id'], "There was an error processing the image.")
+
 
     def process_image(self, photo_path, command):
         try:
