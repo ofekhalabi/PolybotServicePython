@@ -22,13 +22,18 @@ class Bot:
         # set the webhook URL
         self.telegram_bot_client.set_webhook(url=f'{bot_app_url}/{token}/', timeout=60)
 
+        # Flag to track if send_message was called
+        self.message_sent = False
+
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
     def send_text(self, chat_id, text):
         try:
             self.telegram_bot_client.send_message(chat_id, text)
+            self.message_sent = True
         except AssertionError as e:
             print (f'False is not true: {e}')
+            self.message_sent = False
         except Exception as e :
             logger.error(f'Error sending message: {e}')
             self.message_sent = False
