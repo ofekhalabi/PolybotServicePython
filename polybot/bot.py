@@ -35,7 +35,11 @@ class Bot:
             print (f'False is not true: {e}')
 
     def is_current_msg_photo(self, msg):
-        return 'photo' in msg
+        try:
+            return 'photo' in msg
+        except AssertionError as e:
+            print (f'False is not true: {e}')
+
 
     def download_user_photo(self, msg):
         """
@@ -59,8 +63,8 @@ class Bot:
             return file_info.file_path
         except OSError as e:
             print(f"ERROR, Please check your permission {e}")
-        except RuntimeError as e:
-            logger.error(e)
+        except AssertionError as e:
+            print(f'False is not true: {e}')
 
 
 
