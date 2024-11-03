@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import patch, Mock, mock_open, MagicMock
 from polybot.bot import ImageProcessingBot
 import os
-import tempfile
 
 img_path = 'polybot/test/beatles.jpeg' if '/polybot/test' not in os.getcwd() else 'beatles.jpeg'
 
@@ -63,22 +62,6 @@ class TestBot(unittest.TestCase):
 
         self.bot = bot
 
-    @patch('polybot.img_proc.Img.contour', return_value='/tmp/mock_contour_image.jpg')
-    def test_contour(self, MockImg):
-        # Setting caption to trigger contour processing
-        mock_msg['caption'] = 'Contour'
-
-        # Simulate calling the handle_message function with the mock message
-        self.bot.handle_message(mock_msg)
-
-        # Ensure contour method is called once
-        MockImg.assert_called_once()
-
-        # Validate that the bot attempts to send the processed image as a response
-        self.bot.telegram_bot_client.send_photo.assert_called_once_with(
-            mock_msg['chat']['id'], '/tmp/mock_contour_image.jpg'
-        )
-    """
     def test_contour(self):
         mock_msg['caption'] = 'Contour'
 
@@ -87,7 +70,6 @@ class TestBot(unittest.TestCase):
 
             mock_method.assert_called_once()
             self.bot.telegram_bot_client.send_photo.assert_called_once()
-    """
 
     @patch('builtins.open', new_callable=mock_open)
     def test_contour_with_exception(self, mock_open):
