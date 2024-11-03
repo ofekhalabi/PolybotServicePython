@@ -83,23 +83,25 @@ class ImageProcessingBot(Bot):
 
         chat_id = msg['chat']['id']
         caption = msg.get('caption', None)  # Get the caption from the message
+        try:
+            if self.is_current_msg_photo(msg):
+                photo_path = self.download_user_photo(msg)
 
-        if self.is_current_msg_photo(msg):
-            photo_path = self.download_user_photo(msg)
+                if caption:
+                    caption = caption.lower()
+                    # Check if the caption matches any of the defined commands
+                    if caption in ['blur', 'contour', 'rotate', 'segment', 'salt and pepper', 'concat', 'rotate 2']:
+                        processed_image_path = self.process_image(photo_path, caption)
+                        self.send_photo(chat_id,processed_image_path)
 
-            if caption:
-                caption = caption.lower()
-                # Check if the caption matches any of the defined commands
-                if caption in ['blur', 'contour', 'rotate', 'segment', 'salt and pepper', 'concat', 'rotate 2']:
-                    processed_image_path = self.process_image(photo_path, caption)
-                    self.send_photo(chat_id,processed_image_path)
-
+                    else:
+                        self.send_text(chat_id, f'Unknown command: {caption}')
                 else:
-                    self.send_text(chat_id, f'Unknown command: {caption}')
+                    self.send_text(chat_id, 'Photo received with no caption.')
             else:
-                self.send_text(chat_id, 'Photo received with no caption.')
-        else:
-            self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+                self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+        except OSError as e:
+            logger.error(f'Read-only file system')
 
     def process_image(self, photo_path, command):
         try:
