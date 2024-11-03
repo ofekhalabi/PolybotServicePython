@@ -49,7 +49,6 @@ mock_msg = {
 class TestBot(unittest.TestCase):
 
     @patch('telebot.TeleBot')
-    @patch('builtins.open', new_callable=mock_open)
     def setUp(self, mock_telebot):
         bot = ImageProcessingBot(token='bot_token', bot_app_url='webhook_url')
         bot.telegram_bot_client = mock_telebot.return_value

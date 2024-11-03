@@ -36,6 +36,7 @@ class Bot:
         """
         Downloads the photos that sent to the Bot to `photos` directory (should be existed)
         :return:
+        """
         if not self.is_current_msg_photo(msg):
             raise RuntimeError(f'Message content of type \'photo\' expected')
 
@@ -51,20 +52,7 @@ class Bot:
 
 
         return file_info.file_path
-        """
-        if not self.is_current_msg_photo(msg):
-            raise RuntimeError(f'Message content of type \'photo\' expected')
 
-        # Get the file info for the last photo in the message
-        file_info = self.telegram_bot_client.get_file(msg['photo'][-1]['file_id'])
-        data = self.telegram_bot_client.download_file(file_info.file_path)
-
-        # Create a temporary file to save the photo
-        with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as temp_file:
-            temp_file.write(data)
-            temp_file_path = temp_file.name  # Save the path for later use
-
-        return temp_file_path
 
     def send_photo(self, chat_id, img_path):
         if not os.path.exists(img_path):
