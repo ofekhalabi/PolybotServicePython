@@ -1,3 +1,5 @@
+from logging import exception
+
 import telebot
 from loguru import logger
 import os
@@ -27,6 +29,9 @@ class Bot:
             self.telegram_bot_client.send_message(chat_id, text)
         except AssertionError as e:
             print (f'False is not true: {e}')
+        except Exception as e :
+            logger.error(f'Error sending message: {e}')
+            self.message_sent = False
 
     def send_text_with_quote(self, chat_id, text, quoted_msg_id):
         try:
