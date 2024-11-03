@@ -4,6 +4,7 @@ import os
 import time
 from telebot.types import InputFile
 from polybot.img_proc import Img
+import tempfile
 
 
 class Bot:
@@ -41,6 +42,11 @@ class Bot:
 
         file_info = self.telegram_bot_client.get_file(msg['photo'][-1]['file_id'])
         data = self.telegram_bot_client.download_file(file_info.file_path)
+        # Use a temporary file for storing the downloaded photo
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_file.write(data)
+            return temp_file.name
+        """
         folder_name = file_info.file_path.split('/')[0]
 
         if not os.path.exists(folder_name):
@@ -50,6 +56,7 @@ class Bot:
             photo.write(data)
 
         return file_info.file_path
+        """
 
     def send_photo(self, chat_id, img_path):
         if not os.path.exists(img_path):
@@ -99,22 +106,26 @@ class ImageProcessingBot(Bot):
             self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
 
     def process_image(self, photo_path, command):
-        img = Img(photo_path)  # Assuming Img is your image processing class
-        if command == 'blur':
-            img.blur()
-        elif command == 'contour':
-            img.contour()
-        elif command == 'rotate':
-            img.rotate()
-        elif command == 'segment':
-            img.segment()
-        elif command == 'salt and pepper':
-            img.salt_n_pepper()
-        elif command == 'concat':
-            img.concat(img)
-        elif command == 'rotate 2':
-            img.rotate()
-            img.rotate()
+        try:
+            img = Img(photo_path)  # Assuming Img is your image processing class
+            if command == 'blur':
+                img.blur()
+            elif command == 'contour':
+                img.contour()
+            elif command == 'rotate':
+                img.rotate()
+            elif command == 'segment':
+                img.segment()
+            elif command == 'salt and pepper':
+                img.salt_n_pepper()
+            elif command == 'concat':
+                img.concat(img)
+            elif command == 'rotate 2':
+                img.rotate()
+                img.rotate()
 
-        return img.save_img()
+            return img.save_img()
+        except Exception as e:
+            logger.error(f'Error processing image: {e}')
+            return None  # Return None or handle accordingly
 
