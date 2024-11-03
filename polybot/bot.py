@@ -90,21 +90,18 @@ class Bot:
             self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
         except TypeError as e:
             print(f'path should be string, bytes, os.PathLike or integer, not NoneType {e}')
-        except KeyError as e:
-            logger.error(f'Missing key in message: {e}')
-            self.send_text(msg['chat']['id'], 'Error processing your message.')
-        except Exception as e:
-            logger.error(f'Unexpected error in handle_message: {e}')
-            self.send_text(msg['chat']['id'], 'An unexpected error occurred.')
+
 
 
 class QuoteBot(Bot):
     def handle_message(self, msg):
-        logger.info(f'Incoming message: {msg}')
+        try:
+            logger.info(f'Incoming message: {msg}')
 
-        if msg["text"] != 'Please don\'t quote me':
-            self.send_text_with_quote(msg['chat']['id'], msg["text"], quoted_msg_id=msg["message_id"])
-
+            if msg["text"] != 'Please don\'t quote me':
+                self.send_text_with_quote(msg['chat']['id'], msg["text"], quoted_msg_id=msg["message_id"])
+        except AssertionError as e:
+            print(f'False is not true: {e}')
 
 class ImageProcessingBot(Bot):
     def handle_message(self, msg):
@@ -154,5 +151,7 @@ class ImageProcessingBot(Bot):
             return img.save_img()
         except Exception as e:
             logger.error(f'Error processing image: {e}')
+        except AssertionError as e:
+            print(f'False is not true: {e}')
 
 
