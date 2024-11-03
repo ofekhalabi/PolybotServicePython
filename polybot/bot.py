@@ -68,8 +68,11 @@ class Bot:
 
     def handle_message(self, msg):
         """Bot Main message handler"""
-        logger.info(f'Incoming message: {msg}')
-        self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+        try:
+            logger.info(f'Incoming message: {msg}')
+            self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+        except TypeError as e:
+            print(f'path should be string, bytes, os.PathLike or integer, not NoneType {e}')
 
 
 class QuoteBot(Bot):
