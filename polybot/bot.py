@@ -49,6 +49,7 @@ class Bot:
         with open(file_info.file_path, 'wb') as photo:
             photo.write(data)
 
+
         return file_info.file_path
         """
         if not self.is_current_msg_photo(msg):
