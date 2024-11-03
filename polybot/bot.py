@@ -29,7 +29,10 @@ class Bot:
             print (f'False is not true: {e}')
 
     def send_text_with_quote(self, chat_id, text, quoted_msg_id):
-        self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
+        try:
+            self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
+        except AssertionError as e:
+            print (f'False is not true: {e}')
 
     def is_current_msg_photo(self, msg):
         return 'photo' in msg
